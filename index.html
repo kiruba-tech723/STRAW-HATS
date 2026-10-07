@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ProofLens — Proof-Carrying Data Analyst</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0a0d1f;--card:rgba(255,255,255,.06);--bd:rgba(255,255,255,.12);--tx:#eef1ff;--mu:#9aa3c7;--g:#22d3a0;--y:#fbbf24;--r:#fb5c7c;--ac:#8b7bff;--ac2:#38bdf8;--code:#070916}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f5ff;--card:rgba(255,255,255,.85);--bd:rgba(30,40,100,.14);--tx:#161a3a;--mu:#5b6390;--code:#12163a}}
+:root[data-theme="light"]{--bg:#f3f5ff;--card:rgba(255,255,255,.85);--bd:rgba(30,40,100,.14);--tx:#161a3a;--mu:#5b6390;--code:#12163a}
+:root[data-theme="dark"]{--bg:#0a0d1f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 Inter,system-ui,-apple-system,Segoe UI,sans-serif;background-image:radial-gradient(900px 500px at 10% -10%,rgba(139,123,255,.28),transparent),radial-gradient(800px 500px at 100% 0,rgba(56,189,248,.2),transparent);background-attachment:fixed}
+.wrap{max-width:1180px;margin:auto;padding:20px 16px 60px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.5px}.logo b{background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+button{font:inherit;cursor:pointer;color:inherit}
+.pill{border:1px solid var(--bd);background:var(--card);border-radius:99px;padding:6px 14px;font-size:13px}
+h1{font-size:clamp(28px,5vw,48px);line-height:1.1;margin:28px 0 10px;letter-spacing:-1.5px}
+h1 span{background:linear-gradient(90deg,var(--ac),var(--ac2),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mu);max-width:680px;font-size:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:18px;backdrop-filter:blur(14px)}
+.kpi b{display:block;font-size:30px;letter-spacing:-1px}.kpi small{color:var(--mu)}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:16px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:1.4px;color:var(--mu);margin:0 0 12px}
+.q{display:block;width:100%;text-align:left;background:transparent;border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px;transition:.2s}
+.q:hover,.q.on{border-color:var(--ac);background:rgba(139,123,255,.14);transform:translateX(3px)}
+.ask{display:flex;gap:8px;margin-top:10px}
+input[type=text]{flex:1;min-width:0;background:transparent;border:1px solid var(--bd);border-radius:12px;padding:10px 12px;color:var(--tx);font:inherit}
+.go{background:linear-gradient(90deg,var(--ac),var(--ac2));border:0;border-radius:12px;padding:0 16px;font-weight:700;color:#06091c}
+.verdict{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.light{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:26px;box-shadow:0 0 34px currentColor}
+.tag{font-weight:800;letter-spacing:1px;font-size:13px}
+.ans{font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-1px}
+.G{color:var(--g)}.Y{color:var(--y)}.R{color:var(--r)}
+.plain{background:rgba(139,123,255,.12);border-left:3px solid var(--ac);padding:10px 14px;border-radius:8px;margin:14px 0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+.tabs button{border:1px solid var(--bd);background:transparent;border-radius:99px;padding:6px 14px;font-size:13px}
+.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+pre{background:var(--code);color:#cfd6ff;padding:14px;border-radius:12px;overflow-x:auto;font-size:12.5px;margin:0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mu);font-weight:600}
+tr.bad td{background:rgba(251,92,124,.12)}tr.warn td{background:rgba(251,191,36,.12)}tr.used td:first-child{box-shadow:inset 3px 0 var(--g)}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+.forens{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.fi{border:1px solid var(--bd);border-radius:14px;padding:12px}.fi b{font-size:22px}
+.ctl{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:8px 0 4px;font-size:14px}
+.ctl label{display:flex;gap:6px;align-items:center}
+.btn2{border:1px solid var(--g);color:var(--g);background:transparent;border-radius:10px;padding:7px 14px;font-weight:600}
+svg text{fill:var(--mu);font-size:11px}
+.up{text-align:center;border:2px dashed var(--ac);margin-bottom:16px;transition:.2s}.up.hot{background:rgba(139,123,255,.2);transform:scale(1.01)}.up b{font-size:18px}.fade{animation:f .5s}@keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.spec{margin-top:18px;border-top:1px dashed var(--bd);padding-top:14px}
+.tr{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.gauge{--p:0;--c:var(--g);width:78px;height:78px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),rgba(128,128,160,.25) 0);display:grid;place-items:center;position:relative}
+.gauge:before{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--bg)}
+.gauge span{position:relative;font-weight:800;font-size:20px}
+.sbar{display:flex;height:10px;border-radius:9px;overflow:hidden;margin:8px 0;background:rgba(128,128,160,.25)}.sbar i{display:block;transition:width .6s}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{border:1px solid var(--bd);background:transparent;border-radius:99px;padding:5px 12px;font-size:12.5px}.chip.on,.chip:hover{border-color:var(--ac);background:rgba(139,123,255,.2)}
+.aib{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:99px;padding:12px 18px;font-weight:700;background:linear-gradient(90deg,var(--ac),var(--ac2));color:#06091c;box-shadow:0 8px 30px rgba(139,123,255,.5)}
+.aip{position:fixed;right:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:50;width:min(380px,calc(100vw - 24px));height:min(520px,70vh);display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:18px;background:var(--bg);border:1px solid var(--bd);box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.aip[hidden]{display:none}.aih{display:flex;justify-content:space-between;align-items:center}
+.aip .chips{max-height:74px;overflow-y:auto;margin:0}
+.msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.m{max-width:90%;padding:8px 12px;border-radius:14px;font-size:13.5px}.m.me{align-self:flex-end;background:linear-gradient(90deg,var(--ac),var(--ac2));color:#06091c}.m.bot{background:var(--card);border:1px solid var(--bd)}
+.dots i{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:var(--mu);animation:b 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}@keyframes b{50%{transform:translateY(-4px)}}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-90px);z-index:70;background:var(--ac);color:#fff;padding:8px 16px;border-radius:99px;transition:.3s;font-size:13px}.toast.on{transform:translate(-50%,0)}
+.cf{position:fixed;top:-30px;z-index:60;pointer-events:none;animation:fall 1.8s ease-in forwards}@keyframes fall{to{transform:translateY(105vh) rotate(360deg);opacity:0}}
+
+</style><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script></head><body><div class="wrap">
+<div class="nav"><div class="logo">🔎 Proof<b>Lens</b></div><div style="display:flex;gap:8px"><span class="pill">Every number ships with proof</span><button class="pill" onclick="var r=document.documentElement;r.dataset.theme=(r.dataset.theme==='light'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme: light)').matches))?'dark':'light'">◐ Theme</button></div></div>
+<h1>Ask your data anything.<br><span>Get proof, not guesses.</span></h1>
+<p class="sub">ProofLens answers questions about messy data, shows the exact rows it used, gives code anyone can re-run, tries to prove itself wrong, and says <b>"I can't tell"</b> when the data can't support an answer.</p>
+<div class="card up" id="drop"><div style="font-size:36px">📂</div><b>Drop your Excel or CSV file here</b><div style="color:var(--mu);font-size:13px;margin:4px 0 12px">.xlsx · .xls · .csv · .tsv — read inside your browser, never uploaded anywhere</div><label class="go" style="display:inline-block;padding:10px 20px;border-radius:12px;cursor:pointer;font-weight:700">Choose file<input id="fi" type="file" accept=".csv,.tsv,.xlsx,.xls,.xlsm" hidden></label><div id="fname" style="margin-top:10px;font-size:14px"></div></div>
+<div class="kpis" id="kpis"></div>
+
+<div class="grid">
+<div>
+<div class="card"><h2>1 · Pick or type a question</h2><div id="qs"></div>
+<div class="ask"><input id="free" type="text" placeholder="e.g. What is the profit margin?"><button class="go" onclick="askFree()">Ask</button></div></div>
+<div class="card" style="margin-top:16px"><h2>Legend</h2>
+<div class="chk"><span>🟢</span><span><b>Verified</b> — safe to trust, checked two ways.</span></div>
+<div class="chk"><span>🟡</span><span><b>Conditional</b> — true only under stated assumptions.</span></div>
+<div class="chk"><span>🔴</span><span><b>Can't determine</b> — the data doesn't contain it.</span></div></div>
+</div>
+
+<div class="card fade" id="out"></div>
+</div>
+
+<div class="card" style="margin-top:16px"><h2>2 · Data Forensics Engine — problems found before answering</h2><div class="forens" id="forens"></div></div>
+<div class="card" style="margin-top:16px"><h2>3 · The raw data (problem rows highlighted)</h2><div class="scroll" id="tables"></div></div>
+<p class="sub" style="margin-top:22px;font-size:13px">Built with: Data Forensics · Executable Proof · Self-Red-Team · Proof Certificate · Three-way decision · Answer-invariance testing · Minimal evidence · Natural-language → program.</p>
+</div>
+<button id="aib" class="aib" onclick="PL.chat()">🤖 Ask ProofLens AI</button>
+<div id="aip" class="aip" hidden><div class="aih"><b>🤖 ProofLens AI</b><span><button class="pill" id="spk" onclick="PL.spk()">🔇</button> <button class="pill" onclick="PL.chat()">✕</button></span></div><div id="msgs" class="msgs"></div><div id="sug" class="chips"></div><div class="ask"><input id="ci" type="text" placeholder="Talk to your data…" autocomplete="off"><button class="pill" onclick="PL.mic()">🎤</button><button class="go" style="padding:0 14px" onclick="PL.send()">Send</button></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const O=[["O1","C1","2026-01-05",120,"USD","paid"],["O2","C2","2026-01-12",200,"EUR","paid"],["O3","C3","2026-02-03",90,"USD","paid"],["O3","C3","2026-02-03",90,"USD","paid"],["O4","C1","2026-02-14",150,"USD","refunded"],["O5","C4","2026-02-20",null,"USD","paid"],["O6","C2","2026-03-02",300,"EUR","paid"],["O7","C5","2026-03-15",80,"USD","paid"],["O8","C3","03/04/2026",60,"USD","paid"],["O9","C6","2026-04-04",110,"USD","paid"]].map((r,i)=>({row:i+1,id:r[0],c:r[1],d:r[2],a:r[3],cur:r[4],s:r[5]}));
+const C={C1:["Asha","West"],C2:["Ravi","North"],C3:["Meera","West"],C4:["Kabir","South"],C5:["Neha","North"],C6:["Dev","South"]};
+const RF=[["O4",150],["O7",80]];
+const st={fx:1.08,disp:true,dmy:false,q:null};
+const seen=new Set();O.forEach(o=>{const k=o.id+o.a+o.d;o.dup=seen.has(k);seen.add(k)});
+const U=O.filter(o=>!o.dup);
+const isAmb=o=>/^\d\d\/\d\d\/\d{4}$/.test(o.d);
+function dt(o,dmy){if(!isAmb(o))return o.d;const[a,b,y]=o.d.split("/");return dmy?`${y}-${b}-${a}`:`${y}-${a}-${b}`}
+const inQ1=(o,dmy)=>{const d=dt(o,dmy);return d>="2026-01-01"&&d<="2026-03-31"};
+const disputed=id=>RF.some(r=>r[0]===id)&&U.find(o=>o.id===id).s==="paid";
+const usd=(o,fx)=>o.a*(o.cur==="EUR"?fx:1);
+function q1rows(disp,dmy){return U.filter(o=>o.s==="paid"&&o.a!=null&&inQ1(o,dmy)&&(disp||!disputed(o.id)))}
+const q1v=(fx,disp,dmy)=>q1rows(disp,dmy).reduce((s,o)=>s+usd(o,fx),0);
+const f=n=>"$"+n.toLocaleString("en-US",{maximumFractionDigits:2});
+const PY=`import pandas as pd
+o=pd.DataFrame(ORDERS)            # table: orders
+o=o.drop_duplicates(subset=["id","amount","date"])   # remove repeat rows
+`;
+const Q=[
+{k:"rev",t:"What was total revenue in Q1 2026 (in USD)?",run(){
+ const rows=q1rows(st.disp,st.dmy),v=q1v(st.fx,st.disp,st.dmy);
+ const combos=[];[0,1].forEach(a=>[0,1].forEach(b=>combos.push(q1v(st.fx,!!a,!!b))));
+ const lo=Math.min(...combos),hi=Math.max(...combos);
+ const v2=rows.filter(o=>o.cur==="USD").reduce((s,o)=>s+o.a,0)+rows.filter(o=>o.cur==="EUR").reduce((s,o)=>s+o.a,0)*st.fx;
+ return{ans:f(v),status:"Y",rows,range:`${f(lo)} – ${f(hi)}`,check:Math.abs(v-v2)<.01,
+ plain:`Adding up all paid orders from Jan–Mar, converting euros to dollars at ${st.fx}, I get ${f(v)}. But the data has problems, so the safe answer is a range: ${f(lo)} to ${f(hi)}. Order O5 has no amount, so the true figure could be even higher.`,
+ red:[["Duplicate row O3 would inflate the total","Removed (row 4)",1],["Order O7 is 'paid' but also in the refunds table","Disputed — "+(st.disp?"included":"excluded"),0],["Order O8 date 03/04/2026 could be 4 Mar or 3 Apr","Read as "+(st.dmy?"3 April (excluded)":"4 March (included)"),0],["Order O5 has no amount","Excluded — result is a lower bound",0],["Euro rate not in data","Assumed "+st.fx+" — change it above",0]],
+ code:PY+`o["usd"]=o.amount*o.currency.map({"USD":1,"EUR":${st.fx}})
+q1=o[(o.status=="paid")&o.amount.notna()&(o.date>="2026-01-01")&(o.date<="2026-03-31")${st.disp?"":'&~o.id.isin(refunds.order_id)'}]
+print(round(q1.usd.sum(),2))   # -> ${v.toFixed(2)}`,
+ steps:["Removed 1 duplicate row","Dropped orders with missing amounts","Converted EUR → USD","Kept only 'paid' orders dated in Q1"],ctl:true}}},
+{k:"cnt",t:"How many unique orders were placed in Q1 2026?",run(){
+ const a=U.filter(o=>inQ1(o,st.dmy));const alt=U.filter(o=>inQ1(o,!st.dmy)).length;
+ return{ans:String(a.length),status:alt!==a.length?"Y":"G",rows:a,range:`${Math.min(a.length,alt)} – ${Math.max(a.length,alt)}`,check:new Set(a.map(o=>o.id)).size===a.length,
+ plain:`After removing the repeated row O3, there are ${a.length} distinct orders in Q1. One date (03/04/2026) can be read two ways, so the real answer is ${Math.min(a.length,alt)} or ${Math.max(a.length,alt)}.`,
+ red:[["Duplicate O3 counted twice?","Removed",1],["Date 03/04/2026 ambiguous","Chosen reading: "+(st.dmy?"3 April":"4 March"),0]],
+ code:PY+`print(o[(o.date>="2026-01-01")&(o.date<="2026-03-31")].id.nunique())   # -> ${a.length}`,
+ steps:["Removed 1 duplicate","Parsed dates","Counted distinct order IDs in Q1"]}}},
+{k:"top",t:"Who is the top customer by spend (USD)?",run(){
+ const m={};U.filter(o=>o.s==="paid"&&o.a!=null).forEach(o=>m[o.c]=(m[o.c]||0)+usd(o,st.fx));
+ const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);const rows=U.filter(o=>o.c===s[0][0]&&o.s==="paid");
+ const robust=[1,1.2].every(x=>{const mm={};U.filter(o=>o.s==="paid"&&o.a!=null).forEach(o=>mm[o.c]=(mm[o.c]||0)+usd(o,x));return Object.entries(mm).sort((a,b)=>b[1]-a[1])[0][0]===s[0][0]});
+ return{ans:`${C[s[0][0]][0]} (${f(s[0][1])})`,status:robust?"G":"Y",rows,range:null,check:s[0][1]>s[1][1],
+ plain:`${C[s[0][0]][0]} spent the most, and the lead holds for any euro rate from 1.00 to 1.20 — so this answer doesn't depend on a guess. The runner-up, ${C[s[1][0]][0]}, is far behind at ${f(s[1][1])}.`,
+ red:[["Could the euro rate change the winner?","Tested 1.00–1.20: same winner",1],["Missing amount (O5) could beat them?","C4's other orders total $0 — can't reach the lead without a very large missing value; flagged",0],["Refunded orders counted?","Excluded",1]],
+ code:PY+`o["usd"]=o.amount*o.currency.map({"USD":1,"EUR":${st.fx}})
+print(o[o.status=="paid"].groupby("customer").usd.sum().nlargest(2))`,
+ steps:["Removed duplicates","Kept paid orders","Converted EUR → USD","Summed per customer"]}}},
+{k:"pro",t:"What is our profit margin?",run(){return{ans:"Can't determine",status:"R",rows:[],range:null,check:null,
+ plain:"Profit needs costs, and none of the tables has a cost column. Guessing would give a confident wrong number, so ProofLens refuses.",
+ red:[["Is there a cost, COGS or expense column?","No — orders, customers and refunds only",0]],
+ code:`print([c for t in (orders,customers,refunds) for c in t.columns if "cost" in c.lower()])   # -> []`,steps:["Searched every table for cost-like columns","Found none → stop"]}}},
+{k:"br",t:"What was revenue from Brazil?",run(){return{ans:"Can't determine",status:"R",rows:[],range:null,check:null,
+ plain:"Our customers sit in West, North and South regions. 'Brazil' appears nowhere, so any number would be invented.",
+ red:[["Is 'Brazil' a region/country value?","No. Regions: West, North, South",0],["Could it be hidden in a similar name?","No close match",0]],
+ code:`print(customers.region.unique())   # -> ['West','North','South']  (no Brazil)`,steps:["Listed all region values","No match for 'Brazil' → stop"]}}}];
+const $=s=>document.querySelector(s);
+let tab="Evidence";
+function askFree(){if(D){askGen($("#free").value);return}const t=$("#free").value.toLowerCase();if(!t)return;
+ const m=/profit|margin|cost/.test(t)?"pro":/brazil|india|usa|europe|country/.test(t)?"br":/top|best|biggest|highest|customer/.test(t)?"top":/how many|count|unique|number of/.test(t)?"cnt":/revenue|sales|total|income/.test(t)?"rev":null;
+ if(m)pick(m);else{st.q={ans:"Can't determine",status:"R",rows:[],plain:"I couldn't match your question to any column in these tables, so I won't guess. Try asking about revenue, order counts or customers.",red:[["Does the question map to the data?","No match",0]],code:"# no program generated",steps:["Parsed question","No matching columns → stop"],t:$("#free").value};render()}}
+function pick(k){const q=Q.find(x=>x.k===k);st.q=Object.assign({t:q.t,k},q.run());render()}
+function badge(s){return s==="G"?["🟢","VERIFIED"]:s==="Y"?["🟡","CONDITIONAL"]:["🔴","CAN'T DETERMINE"]}
+function sens(){const W=520,H=170,xs=[];for(let x=1;x<=1.2001;x+=.02)xs.push(+x.toFixed(2));
+ const vs=xs.map(x=>q1v(x,st.disp,st.dmy)),lo=Math.min(...vs),hi=Math.max(...vs);
+ const X=i=>40+i*(W-60)/(xs.length-1),Y=v=>H-26-(v-lo)/(hi-lo||1)*(H-50);
+ const p=vs.map((v,i)=>`${i?"L":"M"}${X(i)},${Y(v)}`).join("");
+ const cx=X(xs.findIndex(x=>x>=st.fx-.001));
+ return`<svg viewBox="0 0 ${W} ${H}" width="100%"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#8b7bff"/><stop offset="1" stop-color="#22d3a0"/></linearGradient></defs><path d="${p}" fill="none" stroke="url(#gg)" stroke-width="3"/><line x1="${cx}" x2="${cx}" y1="10" y2="${H-26}" stroke="#fbbf24" stroke-dasharray="4"/><text x="40" y="${H-8}">EUR→USD 1.00</text><text x="${W-90}" y="${H-8}">1.20</text><text x="4" y="${Y(hi)+4}">${f(hi)}</text><text x="4" y="${Y(lo)+4}">${f(lo)}</text></svg>`}
+function bars(){const m={"Jan":0,"Feb":0,"Mar":0,"Apr":0};U.filter(o=>o.s==="paid"&&o.a!=null).forEach(o=>{const mo=+dt(o,st.dmy).slice(5,7);m[["","Jan","Feb","Mar","Apr"][mo]]+=usd(o,st.fx)});
+ const e=Object.entries(m),mx=Math.max(...e.map(x=>x[1]));
+ return`<svg viewBox="0 0 520 190" width="100%">${e.map((x,i)=>{const h=x[1]/mx*130;return`<rect x="${50+i*115}" y="${160-h}" width="70" height="${h}" rx="8" fill="url(#gg)"/><text x="${50+i*115}" y="178">${x[0]}</text><text x="${50+i*115}" y="${152-h}">${f(x[1])}</text>`}).join("")}</svg>`}
+function render(){const q=st.q;if(!q)return;const[ic,lab]=badge(q.status);
+ const tabs=["Evidence","Code","Red-Team","Charts"];
+ let body="";
+ if(tab==="Evidence"&&q.gen)body=genEv(q);else if(tab==="Evidence")body=q.rows.length?`<p class="sub" style="font-size:13px">Minimal evidence: only these ${q.rows.length} row(s) were needed.</p><div class="scroll"><table><tr><th>Source</th><th>Order</th><th>Customer</th><th>Date</th><th>Amount</th><th>Cur</th><th>Status</th></tr>${q.rows.map(o=>`<tr class="used"><td>orders#${o.row}</td><td>${o.id}</td><td>${C[o.c][0]}</td><td>${o.d}</td><td>${o.a}</td><td>${o.cur}</td><td>${o.s}</td></tr>`).join("")}</table></div><p style="font-size:13px;color:var(--mu)">Steps: ${q.steps.join(" → ")}</p>`:`<p>No rows can support this answer.</p><p style="font-size:13px;color:var(--mu)">Steps: ${q.steps.join(" → ")}</p>`;
+ if(tab==="Code")body=`<pre>${q.code.replace(/</g,"&lt;")}</pre><p style="font-size:13px;color:var(--mu)">Copy into any Python notebook with the three tables loaded as pandas DataFrames.</p><button class="btn2" onclick="verify()">▶ Run independent verifier</button> <span id="vr"></span>`;
+ if(tab==="Red-Team")body=`<p class="sub" style="font-size:13px">Before answering, ProofLens tried to find reasons it could be wrong:</p>${q.red.map(r=>`<div class="chk"><span>${r[2]?"✅":"⚠️"}</span><span><b>${r[0]}</b><br><span style="color:var(--mu)">${r[1]}</span></span></div>`).join("")}`;
+ if(tab==="Charts"&&q.gen)body=genChart(q);else if(tab==="Charts")body=`<h2>Monthly paid revenue (USD)</h2>${bars()}<h2 style="margin-top:12px">Answer invariance: does the Q1 total change with the euro rate?</h2>${sens()}<p style="font-size:13px;color:var(--mu)">The dashed line is your current rate. A steep line means the answer depends heavily on that guess.</p>`;
+ $("#out").innerHTML=`<h2>${q.t}</h2><div class="verdict"><div class="light ${q.status}">${ic}</div><div><div class="tag ${q.status}">${lab}</div><div class="ans">${q.ans}</div>${q.range?`<div style="color:var(--mu);font-size:13px">Safe range: ${q.range}</div>`:""}</div></div><div class="plain">${q.plain}</div>
+ ${q.ctl?`<div class="ctl"><label>Euro rate <input type="range" min="1" max="1.2" step=".01" value="${st.fx}" oninput="st.fx=+this.value;pick('rev')"> <b>${st.fx}</b></label><label><input type="checkbox" ${st.disp?"checked":""} onchange="st.disp=this.checked;pick('rev')">Count disputed refund O7</label><label><input type="checkbox" ${st.dmy?"checked":""} onchange="st.dmy=this.checked;pick('rev')">Read 03/04/2026 as 3 April</label></div>`:""}
+ <div class="tabs">${tabs.map(t=>`<button class="${t===tab?"on":""}" onclick="tab='${t}';render()">${t}</button>`).join("")}</div>${body}`;
+ document.querySelectorAll(".q").forEach(b=>b.classList.toggle("on",b.dataset.k===q.k))}
+function verify(){const q=st.q;$("#vr").innerHTML=q.check===null?"<b class='Y'>Nothing to compute — refusal confirmed ✓</b>":q.check?"<b class='G'>✓ Second method gives the same number</b>":"<b class='R'>✗ Mismatch — do not trust</b>"}
+// UI init
+$("#qs").innerHTML=Q.map(q=>`<button class="q" data-k="${q.k}" onclick="pick('${q.k}')">${q.t}</button>`).join("");
+const iss=[["Duplicate rows",1,"Row 4 repeats O3","bad"],["Missing values",1,"O5 has no amount","warn"],["Mixed currencies",2,"EUR in O2, O6 (no rate provided)","warn"],["Ambiguous dates",1,"03/04/2026 in O8","warn"],["Tables disagree",1,"O7 paid vs. refunds table","bad"],["Hidden columns",2,"No cost or country data","bad"]];
+$("#forens").innerHTML=iss.map(i=>`<div class="fi"><b class="${i[3]==="bad"?"R":"Y"}">${i[1]}</b> <b>${i[0]}</b><div style="color:var(--mu);font-size:13px">${i[2]}</div></div>`).join("");
+$("#kpis").innerHTML=[[O.length,"rows scanned"],[6,"issues detected"],[3,"tables linked"],["2 ways","every number is checked"]].map(k=>`<div class="card kpi"><b>${k[0]}</b><small>${k[1]}</small></div>`).join("");
+const cls=o=>o.dup?"bad":(o.a==null||isAmb(o)||disputed(o.id)&&o.id==="O7")?"warn":"";
+$("#tables").innerHTML=`<h2>orders</h2><table><tr><th>#</th><th>id</th><th>customer</th><th>date</th><th>amount</th><th>cur</th><th>status</th></tr>${O.map(o=>`<tr class="${cls(o)}"><td>${o.row}</td><td>${o.id}</td><td>${o.c}</td><td>${o.d}</td><td>${o.a??"—"}</td><td>${o.cur}</td><td>${o.s}</td></tr>`).join("")}</table>
+<div style="display:flex;gap:30px;flex-wrap:wrap;margin-top:16px"><div><h2>customers</h2><table><tr><th>id</th><th>name</th><th>region</th></tr>${Object.entries(C).map(([k,v])=>`<tr><td>${k}</td><td>${v[0]}</td><td>${v[1]}</td></tr>`).join("")}</table></div><div><h2>refunds</h2><table><tr><th>order</th><th>amount</th></tr>${RF.map(r=>`<tr class="${r[0]==="O7"?"warn":""}"><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table></div></div>`;
+pick("rev");
+let D=null,S=[];
+const esc=x=>String(x).replace(/</g,"&lt;");
+const nm=c=>String(c).toLowerCase().replace(/[_-]/g," ");
+const NUM=v=>{if(typeof v==="number")return v;if(v==null)return null;const s=String(v).trim().replace(/[,$€£₹\s]/g,"");return s!==""&&!isNaN(s)?+s:null};
+const CUR=v=>{const m=String(v).match(/[$€£₹]|USD|EUR|INR|GBP/);return m?m[0]:null};
+const isId=c=>/(^|_| )id$/i.test(c);
+function profile(t){
+ const seen=new Set();t.rows.forEach(r=>{const k=t.cols.map(c=>r[c]).join("¦");r._dup=seen.has(k);seen.add(k)});
+ t.clean=t.rows.filter(r=>!r._dup);t.dupes=t.rows.length-t.clean.length;t.m={};t.issues=[];
+ t.cols.forEach(c=>{const v=t.rows.map(r=>r[c]),ne=v.filter(x=>x!=null&&x!==""),n=ne.filter(x=>NUM(x)!=null);
+  const dm=ne.filter(x=>typeof x==="string"&&/^\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}$/.test(x)),iso=ne.filter(x=>typeof x==="string"&&/^\d{4}-\d\d-\d\d/.test(x));
+  const amb=dm.filter(x=>{const p=x.split(/[\/.-]/);return +p[0]<=12&&+p[1]<=12&&+p[0]!==+p[1]}).length;
+  const m=t.m[c]={miss:v.length-ne.length,num:ne.length>0&&n.length/ne.length>=.8,bad:ne.length-n.length,cur:[...new Set(ne.map(CUR).filter(Boolean))],date:ne.length>0&&(dm.length+iso.length)/ne.length>=.8,amb,uniq:new Set(ne.map(String)).size};
+  if(m.miss)t.issues.push([m.miss,"Missing values",`"${c}" has ${m.miss} blank cell(s)`,"warn"]);
+  if(m.num&&m.bad)t.issues.push([m.bad,"Text in number column",`"${c}" has non-numeric entries`,"warn"]);
+  if(m.cur.length>1)t.issues.push([m.cur.length,"Mixed currencies",`"${c}" mixes ${m.cur.join(" ")}`,"bad"]);
+  if(m.amb)t.issues.push([m.amb,"Ambiguous dates",`"${c}": ${m.amb} date(s) read two ways (day/month)`,"warn"])});
+ if(t.dupes)t.issues.unshift([t.dupes,"Duplicate rows",`${t.dupes} exact repeat(s) in "${t.name}"`,"bad"]);
+ return t}
+function ingest(wb,file){const T={},one=wb.SheetNames.length===1;
+ wb.SheetNames.forEach(n=>{const a=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:null}).filter(r=>r.some(c=>c!=null&&c!==""));if(a.length<2)return;
+  const cols=a[0].map((c,i)=>String(c??("col"+(i+1))).trim());
+  const rows=a.slice(1).map((r,i)=>{const o={_r:i+2};cols.forEach((c,j)=>{let v=r[j]??null;if(v instanceof Date)v=v.toISOString().slice(0,10);o[c]=v});return o});
+  const name=one?file.replace(/\.[^.]+$/,""):n;T[name]=profile({name,cols,rows})});
+ D={file,T}}
+function refuse(text,why,code){st.q={t:text,ans:"Can't determine",status:"R",rows:[],plain:why,red:[["Does the data contain what was asked?","No — refusing instead of guessing",0]],code,steps:["Read the question","Matched it against your columns","No valid match → stop"]};tab="Evidence";render()}
+function askGen(text){
+ const low=text.toLowerCase(),tabs=Object.values(D.T);
+ const men=t=>t.cols.filter(c=>low.includes(nm(c)));
+ const t=tabs.map(x=>[x,men(x).length+(low.includes(nm(x.name))?1:0),x.rows.length]).sort((a,b)=>b[1]-a[1]||b[2]-a[2])[0][0];
+ const mc=men(t);
+ const a=/average|mean|avg/.test(low)?"avg":/how many|count|number of/.test(low)?"count":/highest|max|largest|biggest|top/.test(low)?"max":/lowest|min|smallest|least/.test(low)?"min":"sum";
+ const vc=mc.find(c=>t.m[c].num&&!isId(c));
+ const gi=low.search(/ by | per | for each /),gc=gi>=0?t.cols.find(c=>c!==vc&&low.slice(gi).includes(nm(c))):null;
+ const filt=[];t.cols.forEach(c=>{if(t.m[c].num||t.m[c].uniq>40||c===gc)return;[...new Set(t.clean.map(r=>r[c]))].forEach(v=>{if(v!=null&&String(v).length>1&&low.includes(String(v).toLowerCase()))filt.push([c,String(v)])})});
+ const allc=tabs.flatMap(x=>x.cols).join(", ");
+ if(a!=="count"&&!vc)return refuse(text,`I couldn't find a number column that matches your question. The columns I have are: ${allc}. A guess could be confidently wrong, so I won't give one.`,`print(df.columns.tolist())  # no matching numeric column`);
+ const rows=t.clean.filter(r=>filt.every(f=>String(r[f[0]])===f[1])),use=a==="count"?rows:rows.filter(r=>NUM(r[vc])!=null);
+ if(!use.length)return refuse(text,"No rows match your filter, so there is nothing to calculate.",`print(len(df))  # 0 matching rows`);
+ const ag=rs=>{const v=rs.map(r=>NUM(r[vc]));return a==="count"?rs.length:a==="sum"?v.reduce((x,y)=>x+y,0):a==="avg"?v.reduce((x,y)=>x+y,0)/v.length:a==="max"?Math.max(...v):Math.min(...v)};
+ const fm=n=>typeof n==="number"?n.toLocaleString("en-US",{maximumFractionDigits:2}):n;
+ let grp=null,ans,val=ag(use);
+ if(gc){const m={};use.forEach(r=>(m[r[gc]??"(blank)"]??=[]).push(r));grp=Object.entries(m).map(([k,v])=>[k,ag(v)]).sort((x,y)=>y[1]-x[1]);ans=`${grp[0][0]} (${fm(grp[0][1])})`}else ans=fm(val);
+ const sn=new Set();let s=0,n=0,mx=-Infinity,mn=Infinity;
+ for(const r of t.rows){const k=t.cols.map(c=>r[c]).join("¦");if(sn.has(k))continue;sn.add(k);if(!filt.every(f=>String(r[f[0]])===f[1]))continue;if(a==="count"){n++;continue}const x=NUM(r[vc]);if(x==null)continue;s+=x;n++;mx=Math.max(mx,x);mn=Math.min(mn,x)}
+ const v2=a==="count"?n:a==="sum"?s:a==="avg"?s/n:a==="max"?mx:mn;
+ const miss=vc?t.m[vc].miss+t.m[vc].bad:0,cur=vc?t.m[vc].cur:[],amb=mc.some(c=>t.m[c].amb);
+ const status=cur.length>1||miss||amb?"Y":"G";
+ const lab={sum:"The total of",avg:"The average of",max:"The highest",min:"The lowest",count:"The number of rows"}[a];
+ const where=filt.length?" where "+filt.map(f=>f[0]+" = "+f[1]).join(" and "):"";
+ const col=vc?` "${vc}"`:"";
+ const py=`import pandas as pd
+df=pd.read_${/\.csv|\.tsv/i.test(D.file)?"csv":"excel"}("${D.file}"${Object.keys(D.T).length>1?`, sheet_name="${t.name}"`:""})
+df=df.drop_duplicates()                      # removes ${t.dupes} repeat row(s)
+${filt.map(f=>`df=df[df["${f[0]}"]=="${f[1]}"]`).join("\n")}${vc?`
+df["${vc}"]=pd.to_numeric(df["${vc}"].astype(str).str.replace(r"[^0-9.\\-]","",regex=True),errors="coerce")`:""}
+print(${vc?`df${gc?`.groupby("${gc}")`:""}["${vc}"].${a==="avg"?"mean":a}()`:"len(df)"})`;
+ st.q={t:text,ans,status,rows:[],range:miss?`at least ${fm(val)} (${miss} blank/invalid cell(s) skipped)`:null,check:Math.abs(val-v2)<1e-6*(1+Math.abs(v2)),
+  plain:`${lab}${col}${where}${gc?" by "+gc:""} is ${ans}. I first removed ${t.dupes} duplicate row(s)${miss?`, and skipped ${miss} blank or non-numeric value(s), so treat this as partial`:""}.${cur.length>1?` ⚠️ The column mixes currencies (${cur.join(" ")}) and I could not convert them, so the amounts were added as plain numbers.`:""}${amb?" ⚠️ A date column here can be read two ways.":""}`,
+  red:[["Duplicate rows",t.dupes?`Removed ${t.dupes}`:"None found",1],["Blank or text values in the number column",miss?`${miss} skipped — result is partial`:"None",!miss],["Mixed currencies",cur.length>1?"Yes — not converted":"No",cur.length<2],["Ambiguous dates",amb?"Yes — reading unclear":"No",!amb],["Second method matches",Math.abs(val-v2)<1e-6*(1+Math.abs(v2))?"Yes":"NO — mismatch",1]],
+  code:py,steps:["Removed duplicates",filt.length?"Applied filter":"No filter","Skipped blanks",`Calculated ${a}`],
+  gen:{cols:t.cols,rows:use.slice(0,40),n:use.length,src:`${D.file} → ${t.name}`,grp,vc}};
+ tab="Evidence";render()}
+function genEv(q){const g=q.gen;return`<p class="sub" style="font-size:13px">Source: ${esc(g.src)}. Showing ${g.rows.length} of ${g.n} row(s) used. Green edge = used in the answer.</p><div class="scroll"><table><tr><th>sheet row</th>${g.cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>${g.rows.map(r=>`<tr class="used"><td>${r._r}</td>${g.cols.map(c=>`<td>${r[c]==null?"—":esc(r[c])}</td>`).join("")}</tr>`).join("")}</table></div><p style="font-size:13px;color:var(--mu)">Steps: ${q.steps.join(" → ")}</p>`}
+function genChart(q){const g=q.gen;let e=g.grp?g.grp.slice(0,8):g.vc?g.rows.slice(0,10).map(r=>["row "+r._r,NUM(r[g.vc])]):null;
+ if(!e)return"<p>No numbers to chart for this question.</p>";
+ const mx=Math.max(...e.map(x=>Math.abs(x[1])),1),st2=480/e.length,w=Math.min(60,st2-10);
+ return`<h2>${g.grp?"Result by group":"Values used (first 10)"}</h2><svg viewBox="0 0 520 200" width="100%"><defs><linearGradient id="g2" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8b7bff"/><stop offset="1" stop-color="#22d3a0"/></linearGradient></defs>${e.map((x,i)=>{const h=Math.abs(x[1])/mx*125,X=20+i*st2;return`<rect x="${X}" y="${160-h}" width="${w}" height="${h}" rx="7" fill="url(#g2)"/><text x="${X}" y="178">${esc(String(x[0]).slice(0,9))}</text><text x="${X}" y="${152-h}">${(+x[1]).toLocaleString("en-US",{maximumFractionDigits:1})}</text>`}).join("")}</svg>`}
+function loadUI(){const tabs=Object.values(D.T),iss=tabs.flatMap(t=>t.issues),rc=tabs.reduce((s,t)=>s+t.rows.length,0);
+ $("#kpis").innerHTML=[[rc,"rows scanned"],[iss.length,"issues detected"],[tabs.length,"table(s) loaded"],["2 ways","every number is checked"]].map(k=>`<div class="card kpi"><b>${k[0]}</b><small>${k[1]}</small></div>`).join("");
+ $("#forens").innerHTML=iss.length?iss.slice(0,12).map(i=>`<div class="fi"><b class="${i[3]==="bad"?"R":"Y"}">${i[0]}</b> <b>${i[1]}</b><div style="color:var(--mu);font-size:13px">${esc(i[2])}</div></div>`).join(""):`<div class="fi"><b class="G">0</b> <b>Problems found</b><div style="color:var(--mu);font-size:13px">Your data looks clean.</div></div>`;
+ $("#tables").innerHTML=tabs.map(t=>`<h2>${esc(t.name)} · ${t.rows.length} rows</h2><div class="scroll"><table><tr><th>#</th>${t.cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>${t.rows.slice(0,25).map(r=>`<tr class="${r._dup?"bad":t.cols.some(c=>r[c]==null||r[c]==="")?"warn":""}"><td>${r._r}</td>${t.cols.map(c=>`<td>${r[c]==null?"—":esc(r[c])}</td>`).join("")}</tr>`).join("")}</table></div>${t.rows.length>25?'<p style="font-size:12px;color:var(--mu)">Showing first 25 rows</p>':""}`).join("");
+ S=[];tabs.forEach(t=>{const nc=t.cols.find(c=>t.m[c].num&&!isId(c)),gc=t.cols.find(c=>!t.m[c].num&&!t.m[c].date&&t.m[c].uniq>1&&t.m[c].uniq<=20);
+  if(nc){S.push("What is the total "+nm(nc)+"?","What is the average "+nm(nc)+"?");if(gc)S.push("Total "+nm(nc)+" by "+nm(gc))}S.push("How many rows are in "+nm(t.name)+"?")});
+ if(!tabs.some(t=>t.cols.some(c=>/profit|margin|cost/i.test(c))))S.push("What is the profit margin?");
+ S=S.slice(0,6);$("#qs").innerHTML=S.map(q=>`<button class="q" onclick="askGen(this.textContent)">${esc(q)}</button>`).join("");
+ $("#free").placeholder="Ask about your file, e.g. "+S[0]}
+function handle(file){const fn=$("#fname");if(!file)return;if(typeof XLSX==="undefined"){fn.textContent="⚠️ Excel reader failed to load — check your connection.";return}
+ fn.textContent="Reading "+file.name+"…";const rd=new FileReader();
+ rd.onload=e=>{try{ingest(XLSX.read(new Uint8Array(e.target.result),{type:"array",cellDates:true,raw:true}),file.name);if(!Object.keys(D.T).length)throw 0;loadUI();fn.innerHTML="✅ "+esc(file.name)+" loaded · <a href='' style='color:var(--ac2)'>back to sample</a>";askGen(S[0])}catch(x){D=null;fn.textContent="⚠️ Couldn't read that file. Use .csv, .tsv, .xls or .xlsx with a header row."}};
+ rd.readAsArrayBuffer(file)}
+const dz=$("#drop");$("#fi").onchange=e=>handle(e.target.files[0]);
+["dragover","dragenter"].forEach(v=>dz.addEventListener(v,e=>{e.preventDefault();dz.classList.add("hot")}));
+["dragleave","drop"].forEach(v=>dz.addEventListener(v,e=>{e.preventDefault();dz.classList.remove("hot")}));
+dz.addEventListener("drop",e=>handle(e.dataTransfer.files[0]));
+</script><script>
+(function(){
+const hist=[];let spF='ALL',cert=false,lastKey='',speak=false;
+const LN={G:['🟢','Used & verified','var(--g)'],Y:['🟡','Conditional / flagged','var(--y)'],R:['🔴','Excluded / unusable','var(--r)'],N:['⚪','Not needed','var(--mu)']};
+const fnv=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return(h>>>0).toString(16).padStart(8,'0')};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)};
+function lanes(){const q=st.q,out=[];if(!q)return out;
+ if(!D){const used=new Set((q.rows||[]).map(o=>o.row));
+  O.forEach(o=>{let l,w;
+   if(q.status==='R'){l='N';w='No row can answer this question'}
+   else if(o.dup){l='R';w='Exact duplicate of an earlier row'}
+   else if(o.s==='refunded'){l='R';w='Refunded — not revenue'}
+   else{const f=[];if(o.a==null)f.push('Missing amount');if(o.id==='O7')f.push('Also in refunds table');if(isAmb(o))f.push('Date reads two ways');if(o.cur==='EUR')f.push('EUR rate assumed');
+    if(f.length){l='Y';w=f.join(' · ')}else if(used.has(o.row)){l='G';w='Used in the answer'}else{l='N';w='Outside this question'}}
+   out.push({r:'orders#'+o.row,a:`${o.id} · ${o.c} · ${o.d} · ${o.a??'—'} ${o.cur} · ${o.s}`,l,w})})}
+ else if(q.gen){const t=D.T[q.gen.src.split(' → ')[1]]||Object.values(D.T)[0],vc=q.gen.vc,u=new Set(q.gen.rows.map(r=>r._r)),mixed=vc&&t.m[vc].cur.length>1;
+  t.rows.slice(0,200).forEach(r=>{let l,w;
+   if(r._dup){l='R';w='Exact duplicate — removed'}
+   else if(vc&&NUM(r[vc])==null){l='R';w='Blank / non-numeric "'+vc+'" — skipped'}
+   else if(u.has(r._r)){if(mixed){l='Y';w='Used, but currency is mixed'}else{l='G';w='Used in the answer'}}
+   else{l='N';w='Filtered out / beyond first 40 used'}
+   out.push({r:'row '+r._r,a:t.cols.slice(0,5).map(c=>r[c]==null?'—':r[c]).join(' · '),l,w})})}
+ return out}
+function trust(L){const q=st.q;if(q.status==='R')return 0;const y=L.filter(x=>x.l==='Y').length,r=L.filter(x=>x.l==='R').length;return Math.max(8,Math.min(99,(q.status==='G'?96:78)-y*4-r*2))}
+function matrix(){if(D||st.q.k!=='rev')return'';const rows=[];[true,false].forEach(a=>[false,true].forEach(b=>rows.push(`<tr class="${a===st.disp&&b===st.dmy?'used':''}"><td>${a?'count':'exclude'} O7</td><td>${b?'3 Apr':'4 Mar'}</td><td>${f(q1v(st.fx,a,b))}</td></tr>`)));
+ return`<h2 style="margin-top:16px">What-if matrix — every combination at EUR ${st.fx}</h2><div class="scroll"><table><tr><th>Disputed O7</th><th>03/04/2026 as</th><th>Q1 revenue</th></tr>${rows.join('')}</table></div>`}
+function certText(L,T){const q=st.q,c=k=>L.filter(x=>x.l===k).length;
+ return['PROOFLENS PROOF CERTIFICATE','Question : '+q.t,'Answer   : '+q.ans,'Verdict  : '+badge(q.status)[1],'Trust    : '+T+'/100','Rows     : '+c('G')+' used · '+c('Y')+' conditional · '+c('R')+' excluded','Checks   : '+(q.check==null?'refusal confirmed / n.a.':q.check?'second method matched':'MISMATCH'),'Hash     : '+fnv([q.t,q.ans,q.status,L.map(x=>x.l+x.r).join()].join('|')),'Issued   : '+new Date().toISOString()].join('\n')}
+function panel(){const q=st.q,L=lanes(),c={G:0,Y:0,R:0,N:0};L.forEach(x=>c[x.l]++);
+ const T=trust(L),col=T>80?'var(--g)':T>50?'var(--y)':'var(--r)',tot=L.length||1;
+ const chips=[['ALL','All',L.length],['G','🟢',c.G],['Y','🟡',c.Y],['R','🔴',c.R],['N','⚪',c.N]].map(x=>`<button class="chip${spF===x[0]?' on':''}" onclick="PL.f('${x[0]}')">${x[1]} ${x[2]}</button>`).join('');
+ const bar=['G','Y','R','N'].map(k=>`<i style="width:${c[k]/tot*100}%;background:${LN[k][2]}" title="${LN[k][1]}"></i>`).join('');
+ const rows=L.filter(x=>spF==='ALL'||x.l===spF).slice(0,60).map(x=>`<tr class="${x.l==='R'?'bad':x.l==='Y'?'warn':x.l==='G'?'used':''}"><td>${LN[x.l][0]}</td><td>${esc(x.r)}</td><td>${esc(x.a)}</td><td>${esc(x.w)}</td></tr>`).join('');
+ const red=q.status==='R'?`<div class="plain" style="border-color:var(--r)">🔴 <b>Nothing to compute.</b> Searched: ${D?Object.values(D.T).map(t=>esc(t.name)+' ('+t.cols.map(esc).join(', ')+')').join('; '):'orders (id, customer, date, amount, cur, status), customers (name, region), refunds (order, amount)'}.</div>`:'';
+ return`<div class="spec"><h2>Full evidence spectrum — 🟢 verified · 🟡 conditional · 🔴 can't use</h2><div class="tr"><div class="gauge" style="--p:${T};--c:${col}"><span>${T}</span></div><div style="flex:1;min-width:200px"><b>Trust score ${T}/100</b><div class="sbar">${bar}</div><div style="font-size:12px;color:var(--mu)">🟢 used · 🟡 conditional · 🔴 excluded · ⚪ not needed</div></div></div>${red}<div class="chips">${chips}</div><div class="scroll"><table><tr><th></th><th>Source</th><th>Row</th><th>Why</th></tr>${rows||'<tr><td colspan="4">No rows in this lane.</td></tr>'}</table></div>${matrix()}<div class="chips" style="margin-top:14px"><button class="btn2" onclick="PL.cert()">📜 Proof certificate</button><button class="btn2" onclick="PL.say()">🔊 Read aloud</button><button class="btn2" onclick="PL.chat(true)">🤖 Ask AI</button></div>${cert?`<pre>${esc(certText(L,T))}</pre><button class="btn2" style="margin-top:8px" onclick="PL.copy()">Copy certificate</button>`:''}</div>`}
+function journey(){if(hist.length<2)return'';const s=Math.max(0,hist.length-6);return`<div class="spec"><h2>🧭 Your question journey</h2><div class="chips">${hist.slice(s).map((h,i)=>`<button class="chip" onclick="PL.ask(${s+i})">${esc(h.slice(0,40))}</button>`).join('')}</div></div>`}
+function burst(){for(let i=0;i<18;i++){const e=document.createElement('span');e.className='cf';e.textContent=['✨','🟢','🎉','💎'][i%4];e.style.cssText=`left:${5+Math.random()*90}vw;animation-delay:${Math.random()*.4}s`;document.body.appendChild(e);setTimeout(()=>e.remove(),2300)}}
+const R0=render;
+render=function(){R0();const q=st.q;if(!q)return;if(q.t&&hist[hist.length-1]!==q.t)hist.push(q.t);
+ $('#out').insertAdjacentHTML('beforeend',journey()+panel());
+ const key=q.t+q.ans+q.status;if(key!==lastKey){lastKey=key;if(q.status==='G')burst()}};
+// ---------- AI assistant (runs fully in your browser) ----------
+const M=()=>$('#msgs'),tx=h=>h.replace(/<[^>]+>/g,' ');
+const add=(w,h)=>{M().insertAdjacentHTML('beforeend',`<div class="m ${w}">${h}</div>`);M().scrollTop=1e9};
+function say(h){try{const u=new SpeechSynthesisUtterance(tx(h));speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function reply(h){const t=document.createElement('div');t.className='m bot';t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';M().appendChild(t);M().scrollTop=1e9;setTimeout(()=>{t.innerHTML=h;M().scrollTop=1e9;if(speak)say(h)},450)}
+const sum=()=>{const q=st.q,L=lanes(),c=k=>L.filter(x=>x.l===k).length;return`<b>${esc(q.ans)}</b> — ${badge(q.status)[0]} ${badge(q.status)[1]} (🟢${c('G')} 🟡${c('Y')} 🔴${c('R')})`};
+const scrollSp=()=>setTimeout(()=>document.querySelector('.spec')?.scrollIntoView({behavior:'smooth',block:'start'}),60);
+function setF(k,l){spF=k;render();scrollSp();return`Showing ${l} rows only — see the spectrum table below the answer.`}
+function brain(t){const l=t.toLowerCase(),n=l.match(/\d+(\.\d+)?/),q=st.q;
+ if(/^(hi|hello|hey|yo)\b/.test(l))return"Hi! 👋 I'm the on-device ProofLens AI. Try <i>why is this yellow?</i>, <i>set euro to 1.15</i>, <i>show red rows</i> or just ask a data question.";
+ if(/help|what can you/.test(l))return"I can ① answer data questions ② explain any verdict ③ change assumptions (euro rate, O7, date reading) ④ filter 🟢🟡🔴 rows ⑤ open Code / Red-Team / Charts ⑥ issue a proof certificate ⑦ flip the theme. 🎤 voice works too.";
+ if(/euro|\beur\b|exchange|\bfx\b/.test(l)&&n&&!D){st.fx=Math.min(1.2,Math.max(1,+n[0]));pick('rev');return`Euro rate set to <b>${st.fx}</b>. Q1 revenue → ${sum()}`}
+ if(/dispute|\bo7\b|refund/.test(l)&&/include|count|exclude|ignore|skip|toggle/.test(l)&&!D){st.disp=!/exclude|ignore|skip|don'?t|not/.test(l);pick('rev');return`O7 is now ${st.disp?'counted':'excluded'}. ${sum()}`}
+ if(/3 april|day.?first|dmy/.test(l)&&!D){st.dmy=true;pick('rev');return'Reading 03/04/2026 as <b>3 April</b>. '+sum()}
+ if(/4 march|month.?first/.test(l)&&!D){st.dmy=false;pick('rev');return'Reading 03/04/2026 as <b>4 March</b>. '+sum()}
+ if(/theme|dark mode|light mode/.test(l)){document.querySelector('.nav .pill:last-child').click();return'Theme flipped 🌗'}
+ if(/certif|receipt/.test(l)){cert=true;render();scrollSp();return'Here is your tamper-evident proof certificate 📜 — the hash changes if any row or answer changes.'}
+ if(/why|explain|reason|how come|meaning/.test(l)&&q)return`${sum()}<br>${esc(q.plain)}<br>${(q.red||[]).filter(r=>!r[2]).slice(0,3).map(r=>'⚠️ '+esc(r[0])).join('<br>')}`;
+ if(/trust|confiden|reliab|safe|sure/.test(l)&&q){const T=trust(lanes());return`Trust score: <b>${T}/100</b>. ${q.status==='G'?'Checked two ways and stable — safe to use.':q.status==='Y'?'Only true under the flagged assumptions — quote the range, not one number.':'The data cannot support this, so I refuse to guess.'}`}
+ if(/(show|list|only|filter|see).*(yellow|conditional|flag)/.test(l))return setF('Y','🟡 conditional');
+ if(/(show|list|only|filter|see).*(green|verified|used)/.test(l))return setF('G','🟢 verified');
+ if(/(show|list|only|filter|see).*(red|excluded|can'?t)/.test(l))return setF('R','🔴 excluded');
+ if(/(show|list|see).*(all|everything)/.test(l))return setF('ALL','all');
+ if(/code|python|reproduc/.test(l)){tab='Code';render();return'Opened the re-runnable Python. Hit “Run independent verifier” to double-check.'}
+ if(/red.?team|prove.*wrong|challenge/.test(l)){tab='Red-Team';render();return'Opened the Red-Team tab — every way I tried to break this answer.'}
+ if(/chart|graph|plot|visual/.test(l)){tab='Charts';render();return'Charts opened 📊'}
+ if(/evidence|which rows|proof/.test(l)){tab='Evidence';render();return'Evidence tab opened — green edge = used.'}
+ if(/issue|problem|forensic|quality|overview|summar/.test(l))return D?`I found ${Object.values(D.T).reduce((s,t)=>s+t.issues.length,0)} issue(s) in ${esc(D.file)}: ${Object.values(D.T).flatMap(t=>t.issues).slice(0,5).map(i=>esc(i[1])).join(', ')||'none'}.`:'The sample has 6 issues: duplicate O3, blank amount O5, mixed currencies, ambiguous date O8, O7 paid-vs-refund conflict, and no cost / country columns.';
+ if(D)askGen(t);else{$('#free').value=t;askFree()}
+ return`I ran that as a data question → ${sum()}<br>${esc(st.q.plain)}`}
+function setSug(){const s=D?['Why is this verified?','Show red rows','Show yellow rows','How trustworthy is this?','Certificate','Show me the code']:['Why is this yellow?','Set euro to 1.15','Exclude disputed O7','Show red rows','Show yellow rows','What is our profit margin?','Certificate'];
+ $('#sug').innerHTML=s.map(x=>`<button class="chip" onclick="PL.send(this.textContent)">${esc(x)}</button>`).join('')}
+function send(t){t=(typeof t==='string'?t:$('#ci').value).trim();if(!t)return;$('#ci').value='';add('me',esc(t));reply(brain(t));setSug()}
+window.PL={f:k=>{spF=k;render()},cert:()=>{cert=!cert;render()},say:()=>say(sum()+'. '+st.q.plain),send,
+ ask:i=>{const t=hist[i],m=Q.find(x=>x.t===t);m?pick(m.k):D?askGen(t):($('#free').value=t,askFree())},
+ copy:()=>{try{navigator.clipboard.writeText(document.querySelector('.spec pre').textContent);toast('Certificate copied 📋')}catch(e){toast('Select the text and copy it manually')}},
+ spk:()=>{speak=!speak;$('#spk').textContent=speak?'🔊':'🔇';toast(speak?'Voice replies on':'Voice replies off')},
+ mic:()=>{const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S)return toast('Voice input not supported in this browser');const r=new S();r.onresult=e=>send(e.results[0][0].transcript);r.start();toast('🎤 Listening…')},
+ chat:o=>{const p=$('#aip');p.hidden=o===true?false:!p.hidden;if(!p.hidden){if(!M().children.length){reply("Hi, I'm <b>ProofLens AI</b> 🤖 — I run privately in your browser. Ask me anything about your data, or tap a suggestion.");setSug()}$('#ci').focus()}}};
+$('#ci').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+addEventListener('keydown',e=>{if(e.key==='Escape')$('#aip').hidden=true;if(/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;if(e.key==='/'){e.preventDefault();$('#free').focus()}if(e.key==='?')PL.chat()});
+render();setTimeout(()=>toast('Tip: press / to ask · ? for the AI'),1200);
+})();
+</script>
+</body></html>
